@@ -10,6 +10,36 @@
   </head>
   <body>
     <div id="library-container"></div>
-    <button id="add-book">New Book</button>
+
+    <button id="new-book">New Book</button>
+
+    <div id="book-form">
+      <div id="book-title-container">
+        <label for="book-title">Book Title</label>
+        <input
+          name="book-title"
+          type="text"
+          placeholder="The Wonderful Wizard of Oz"
+          required
+        />
+      </div>
+
+      <div id="author-container">
+        <label for="author">Author</label>
+        <input name="author" type="text" placeholder="L. Frank Baum" />
+      </div>
+
+      <div id="pages-container">
+        <label for="pages">Pages</label>
+        <input name="pages" type="number" placeholder="272" />
+      </div>
+
+      <div id="read-container">
+        <label for="read">Have you read it?</label>
+        <input type="checkbox" name="read" id="read" unchecked />
+      </div>
+
+      <button id="add-book">Done</button>
+    </div>
   </body>
 </html>
