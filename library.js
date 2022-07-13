@@ -11,57 +11,23 @@ function Book(title, author, pages, read) {
   this.index = index;
   index++;
   this.info = function () {
-    let readMessage = "",
-      info = "";
-
-    if (read) {
-      readMessage = "read";
-    } else {
-      readMessage = "not read yet";
-    }
-
-    info = `${this.title} by ${this.author}, ${this.pages} pages, ${readMessage}`;
-    console.log(this.index);
+    let info = `${this.title} by ${this.author}, ${this.pages} pages`;
     return info;
   };
 }
+//toggles read boolean
+Book.prototype.toggleRead = function () {
+  this.read = !this.read;
+};
 
 //prompts user to enter book information
 function addBooktoLibrary() {
-  // let valid = true;
-  // let title = prompt("Book Title: ");
-  // let author = prompt("Author: ");
-  // let pages = prompt("# of Pages: ");
-  // let read = prompt("Have you read it? (y/n): ");
+  const title = document.querySelector("#book-title");
+  const author = document.querySelector("#author");
+  const pages = document.querySelector("#pages");
+  const read = document.querySelector("#read");
 
-  // // pages variable input validation and integer conversion
-  // do {
-  //   valid = true;
-  //   pages = parseInt(pages, 10);
-  //   if (!pages) {
-  //     valid = false;
-  //     pages = prompt(
-  //       "Ok, that was not a number that I can decipher, dude. Try again. How many pages? : "
-  //     );
-  //   }
-  // } while (!valid);
-
-  // // read variable input validation and boolean conversion
-  // do {
-  //   valid = true;
-  //   if (read.slice(0, 1).toLowerCase() == "y") {
-  //     read = true;
-  //   } else if (read.slice(0, 1).toLowerCase() == "n") {
-  //     read = false;
-  //   } else {
-  //     valid = false;
-  //     read = prompt(
-  //       "Invalid Input. Now tell me, have your read this book or not? (y/n): "
-  //     );
-  //   }
-  // } while (!valid);
-
-  let newBook = new Book(title, author, pages, read);
+  let newBook = new Book(title.value, author.value, pages.value, read.checked);
   library.push(newBook);
   return newBook;
 }
@@ -80,6 +46,22 @@ const libraryContainer = document.querySelector("#library-container");
 function addBooktoDOM(currBook) {
   const div = document.createElement("div");
   const p = document.createElement("p");
+
+  const readButton = document.createElement("button");
+  if (currBook.read) {
+    readButton.innerText = "Read";
+  } else {
+    readButton.innerText = "Not Read";
+  }
+  readButton.addEventListener("click", () => {
+    if (currBook.read) {
+      readButton.innerText = "Not Read";
+    } else {
+      readButton.innerText = "Read";
+    }
+    currBook.toggleRead();
+  });
+
   const removeButton = document.createElement("button");
   removeButton.innerText = "X";
   removeButton.addEventListener("click", () => {
@@ -88,6 +70,7 @@ function addBooktoDOM(currBook) {
   });
   p.innerText = currBook.info();
   div.appendChild(p);
+  div.appendChild(readButton);
   div.appendChild(removeButton);
   //use insert before so newest title appears at top
   libraryContainer.insertBefore(div, libraryContainer.firstChild);
@@ -101,11 +84,41 @@ function displayLibrary() {
   }
 }
 
+//brings up form for book input
+const newBook = document.querySelector("#new-book");
+newBook.addEventListener("click", () => {
+  //reset form
+  document.querySelector("#book-title").value = null;
+  document.querySelector("#author").value = null;
+  document.querySelector("#pages").value = null;
+  document.querySelector("#read").checked = false;
+
+  const bookForm = document.querySelector("#book-form");
+  bookForm.style.cssText = "display: block";
+});
+
 const addBook = document.querySelector("#add-book");
 addBook.addEventListener("click", () => {
   //prompts user to add book, new book is added to library, then added to dom
   // does not require rerenderering entire library on dom
-  addBooktoDOM(addBooktoLibrary());
+  if (
+    document.querySelector("#book-title").validity.valid &&
+    document.querySelector("#author").validity.valid &&
+    document.querySelector("#pages").validity.valid
+  ) {
+    addBooktoDOM(addBooktoLibrary());
+    const bookForm = document.querySelector("#book-form");
+    bookForm.style.cssText = "display: none";
+  } // manual validation since information isn't sent through an actual form
+  else {
+    if (!document.querySelector("#book-title").validity.valid) {
+      document.querySelector("#book-title").reportValidity();
+    } else if (!document.querySelector("#author").validity.valid) {
+      document.querySelector("#author").reportValidity();
+    } else if (!document.querySelector("#pages").validity.valid) {
+      document.querySelector("#pages").reportValidity();
+    }
+  }
 });
 
 theHobbit = new Book("The Hobbit", "J.R.R Tolkien", 295, false);
